@@ -20,16 +20,41 @@ class AuthenticatedSessionController extends Controller
         return view('auth.login');
     }
 
+    protected function authenticated(Request $request, $user)
+{
+    if ($user->role == 'doctor') {
+        return redirect('/doctor/index');
+    } elseif ($user->role == 'patient') {
+        return redirect('/patient/index');
+    } else {
+        return redirect('/admin/dashboard');
+    }
+
+
+    return redirect('/home');
+}
+
     /**
      * Handle an incoming authentication request.
      */
     public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
-
+    
         $request->session()->regenerate();
-
-        return redirect()->intended(RouteServiceProvider::HOME);
+    
+        // redirect user based on role
+        $user = Auth::user(); 
+        if ($user->role == 'doctor') {
+            return redirect('/doctor/index');
+        } elseif ($user->role == 'patient') {
+            return redirect('/patient/index');
+        } else {
+            return redirect('/admin/dashboard');
+        }
+    
+        // default redirection
+        return redirect(RouteServiceProvider::HOME);
     }
 
     /**
@@ -43,6 +68,6 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect('/login');
     }
 }
