@@ -211,13 +211,9 @@
                   <p class="text-slate-500 my-4">Hello, here are your latest appointements</p>
                   <div>
                     <p class="font-bold mb-3 text-gray-700"><span><i class="fa-regular fa-sun "></i></span> Morning</p>
-                    @php
-                    $i = 0 
-                    @endphp
+                    @php $i = 0 @endphp
                     @foreach($appointements as $appointement)
-                    @php
-                    $i++ 
-                    @endphp
+                    @php $i++ @endphp
                     @if($i == 5)
                     <p class="font-bold mb-3 mt-6 text-gray-700"><span><i class="fa-regular fa-moon"></i></span> Evening</p>
                     @endif

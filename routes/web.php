@@ -39,13 +39,13 @@ Route::middleware('auth')->group(function () {
         return redirect('/');
     })->name('patient.index');
 
-    Route::get('/doctor/doctorPage', function () {
-        if (auth()->user()->role === 'doctor') {
+    Route::get('/patient/doctorPage', function () {
+        if (auth()->user()->role === 'patient') {
             $appointements = Appointement::with('patient')->get();
-            return view('doctor.doctorPage', compact('appointements'));
+            return view('patient.doctorPage', compact('appointements')); 
         }
         return redirect('/');
-    })->name('doctor.doctorPage');
+    })->name('patient.doctorPage');
 
     Route::get('/doctor/index', function () {
         if (auth()->user()->role === 'doctor') {
