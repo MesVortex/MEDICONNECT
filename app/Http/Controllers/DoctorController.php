@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Doctor;
+use App\Models\Appointement;
 use Illuminate\Http\Request;
 
 class DoctorController extends Controller
@@ -36,7 +37,8 @@ class DoctorController extends Controller
      */
     public function show(Doctor $doctor)
     {
-        //
+        $appointements = Doctor::find($doctor->id)->appointement;
+        return view('patient.doctorPage', compact('doctor', 'appointements'));
     }
 
     /**

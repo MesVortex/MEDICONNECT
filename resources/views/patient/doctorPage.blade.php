@@ -68,15 +68,13 @@
       </div>
     </div>
 
-    <div class="flex-1 bg-white rounded-lg shadow-xl mt-4 p-8">
+    <form action="{{ route('appointement.update') }}" method="post" class="flex-1 bg-white rounded-lg shadow-xl mt-4 p-8 mb-10">
+      @csrf
+      @method('put')
       <h4 class="text-xl text-gray-900 font-bold">Appointements log</h4>
       <div class="relative px-4">
         <div class="absolute h-full border border-dashed border-opacity-20 border-secondary"></div>
         <!-- start::Timeline item -->
-        @php
-        $i = 0
-        @endphp
-        
         @foreach($appointements as $appointement)
         @if($appointement->status == 0)
         <div class="flex items-center w-full my-6 -ml-1.5">
@@ -84,8 +82,8 @@
             <div class="w-3.5 h-3.5 bg-blue-600 rounded-full"></div>
           </div>
           <div class="w-11/12">
-            <input type="radio" id="hosting-small{{ $appointement->id }}" name="hosting" value="hosting-small" class="hidden peer" required>
-            <label for="hosting-small{{ $appointement->id }}" class="inline-flex py-2 px-8 rounded-full items-center justify-between w-full text-gray-500 bg-white border border-gray-200 cursor-pointer peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
+            <input type="radio" id="appointement{{ $appointement->id }}" name="appointementID" value="{{ $appointement->id }}" class="hidden peer" required>
+            <label for="appointement{{ $appointement->id }}" class="inline-flex py-2 px-8 rounded-full items-center justify-between w-full text-gray-500 bg-white border border-gray-200 cursor-pointer peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
               <div class="block">
                 <div class="w-full text-lg font-semibold">{{ $appointement->bookingHour }}</div>
                 <div class="w-full">{{ $appointement->date }}</div>
@@ -95,6 +93,7 @@
               </div>
             </label>
           </div>
+          <input type="hidden" name="patientID" value="{{ Auth::user()->id }}">
         </div>
         <!-- end::Timeline item -->
         @else
@@ -104,27 +103,30 @@
             <div class="w-3.5 h-3.5 bg-blue-600 rounded-full"></div>
           </div>
           <div class="w-11/12">
-            <input type="radio" id="hosting-small{{ $appointement->id }}" name="hosting" value="hosting-small" class="hidden peer" disabled>
-            <label for="hosting-small{{ $appointement->id }}" class="inline-flex py-2 px-8 rounded-full items-center justify-between w-full text-gray-500 bg-white border border-gray-200 cursor-pointer peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
+            <input type="radio" id="appointement{{ $appointement->id }}" name="appointementID" value="{{ $appointement->id }}" class="hidden peer" disabled>
+            <label for="appointement{{ $appointement->id }}" class="inline-flex py-2 px-8 rounded-full items-center justify-between w-full text-gray-500 bg-white border border-gray-200 cursor-pointer peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
               <div class="block">
                 <div class="w-full text-lg font-semibold">{{ $appointement->bookingHour }}</div>
                 <div class="w-full">{{ $appointement->date }}</div>
               </div>
               <div>
-                <div class="w-full ">Reserved By: {{ $appointement->patient->user->name }}</div>
+                <div class="w-full text-red-600">Already Reserved</div>
               </div>
               <div>
                 <i class="fa-solid fa-heart-circle-xmark text-red-600"></i>
               </div>
             </label>
           </div>
+          <input type="hidden" name="patientID" value="{{ Auth::user()->id }}">
         </div>
         @endif
         @endforeach
         <!-- end::Timeline item -->
-
       </div>
-    </div>
-  </div>
+      <button type="submit" class="p-2 border border-slate-200 rounded-md inline-flex space-x-1 items-center text-indigo-200 hover:text-white bg-indigo-600 hover:bg-indigo-500">
+        <i class="fa-regular fa-bookmark"></i>
+        <span class="text-sm font-medium hidden md:block">Book</span>
+      </button>
+    </form>
 </body>
 <html>

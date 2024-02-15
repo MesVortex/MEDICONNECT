@@ -68,28 +68,28 @@
       </div>
     </div>
 
-    <section class=" bg-blue-500ray-50">
-      <div class="py-10  sm:py-16 block lg:py-24 relative bg-opacity-50  z-40">
-        <div class="mx-auto h-full px-4 pb-20   md:pb-10 sm:max-w-xl md:max-w-full md:px-24 lg:max-w-screen-xl lg:px-8">
-          <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8 relative">
-            <div class="max-w-xl mx-auto text-center">
-              <div class="inline-flex px-4 py-1.5 mx-auto rounded-full  ">
-                <p class="text-4xl font-semibold tracking-widest text-g uppercase">Specialities:</p>
-              </div>
-              <p class="mt-4 text-base leading-relaxed text-gray-600 group-hover:text-white">Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit..</p>
-            </div>
-            <div class="grid grid-cols-1 gap-2 mt-12 sm:grid-cols-3 lg:mt-20   ">
-              @foreach($specialities as $speciality)
-              <a href="{{route('patient.explore', ['speciality' => $speciality])}}" class="transition-all rounded-xl border-2 border-green-600 bg-red-600 hover:bg-green-600 hover:border-red-600  hover:shadow-xl m-2 p-4 relative z-40 group  ">
-                <div class="py-2 px-9 relative flex justify-center items-center">
-                  <i class=" me-5 fa-solid fa-kit-medical fa-2xl group-hover:text-white"></i>
-                  <h3 class="text-lg font-bold text-black group-hover:text-white">{{$speciality->name}}</h3>
-                </div>
-              </a>
-              @endforeach
-            </div>
+    <section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-4 py-12">
+      <div class="text-center pb-12">
+        <h2 class="text-base font-bold text-red-600">
+          We have the best equipment
+        </h2>
+        <h1 class="font-bold text-3xl md:text-4xl lg:text-5xl font-heading text-gray-900">
+          Check our awesome Doctors
+        </h1>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        @foreach($doctors as $doctor)
+        <div class="w-full bg-white border-4 border-green-600 shadow-2xl rounded-lg p-12 flex flex-col justify-center items-center">
+          <div class="mb-8">
+            <img class="object-center object-cover rounded-full h-36 w-36" src="{{ asset('img/doctorProfile.jpg') }}" alt="photo">
+          </div>
+          <div class="text-center">
+            <a href="{{ route('doctor.show', ['doctor'=>$doctor]) }}" class="text-xl text-gray-700 font-bold mb-2">Dr. <span class=" capitalize">{{ $doctor->user->name }}</span></a>
+            <p class="text-base text-gray-400 font-normal capitalize">{{ $doctor->speciality->name }}</p>
           </div>
         </div>
+        @endforeach
+      </div>
     </section>
   </div>
 </body>

@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Appointement;
+use App\Models\Doctor;
 use App\Models\Patient;
+use App\Models\Speciality;
 use Illuminate\Http\Request;
 
 class PatientController extends Controller
@@ -12,7 +15,20 @@ class PatientController extends Controller
      */
     public function index()
     {
-        //
+        if (auth()->user()->role === 'patient') {
+            $specialities = Speciality::all();
+            return view('patient.index', compact('specialities'));
+        }
+        return redirect('/');
+    }
+
+    public function explore(Speciality $speciality)
+    {
+        if (auth()->user()->role === 'patient') {
+            $doctors = Speciality::find($speciality->id)->doctor;
+            return view('patient.explore', compact('doctors'));
+        }
+        return redirect('/');
     }
 
     /**

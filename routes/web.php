@@ -1,10 +1,15 @@
 <?php
 
+use App\Http\Controllers\AppointementController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SpecialityController;
 use App\Http\Controllers\MedicinController;
+use App\Http\Controllers\PatientController;
+use App\Http\Controllers\DoctorController;
 use App\Models\Appointement;
+use App\Models\Doctor;
 use App\Models\Medicin;
+use App\Models\Patient;
 use App\Models\Speciality;
 use Illuminate\Support\Facades\Route;
 
@@ -32,20 +37,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     
-    Route::get('/patient/index', function () {
-        if (auth()->user()->role === 'patient') {
-            return view('patient.index'); 
-        }
-        return redirect('/');
-    })->name('patient.index');
+    Route::get('/patient/index', [PatientController::class, 'index'])->name('patient.index');
 
-    Route::get('/patient/doctorPage', function () {
-        if (auth()->user()->role === 'patient') {
-            $appointements = Appointement::with('patient')->get();
-            return view('patient.doctorPage', compact('appointements')); 
-        }
-        return redirect('/');
-    })->name('patient.doctorPage');
+    Route::get('/patient/doctorPage/{doctor}', [PatientController::class, 'show'])->name('patient.doctorPage');
 
     Route::get('/doctor/index', function () {
         if (auth()->user()->role === 'doctor') {
@@ -91,6 +85,12 @@ Route::delete('/admin/dashboard/{speciality}/delete', [SpecialityController::cla
 Route::post('/admin/dashboard/medicin/add', [MedicinController::class, 'store'])->name('medicin.store');
 Route::put('/admin/dashboard/{medicin}/update', [MedicinController::class, 'update'])->name('medicin.update');
 Route::get('/admin/dashboard/{medicin}/archive', [MedicinController::class, 'archive'])->name('medicin.archive');
+
+Route::put('/patient/doctorPage/update', [AppointementController::class, 'update'])->name('appointement.update');
+
+Route::get('/patient/doctorPage/{doctor}', [DoctorController::class, 'show'])->name('doctor.show');
+
+Route::get('/patient/explore/{speciality}', [PatientController::class, 'explore'])->name('patient.explore');
 
 
 require __DIR__.'/auth.php';

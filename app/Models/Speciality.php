@@ -14,10 +14,10 @@ class Speciality extends Model
     ];
 
     public function doctor(){
-        return $this->hasMany(Doctor::class, 'id');
+        return $this->hasMany(Doctor::class, 'specialityID');
     }
     
     public function medicin(){
-        return $this->hasMany(Medicin::class, 'id');
+        return $this->hasMany(Medicin::class, 'specialityID');
     }
 }

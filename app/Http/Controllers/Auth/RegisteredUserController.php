@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Http\Controllers\AppointementController;
 use App\Http\Controllers\Controller;
+use App\Models\Appointement;
 use App\Models\User;
 use App\Models\Speciality;
 use App\Providers\RouteServiceProvider;
@@ -53,6 +55,10 @@ class RegisteredUserController extends Controller
                     'userID' => $user->id,
                     'specialityID' => $validatedData['specialityID']
                 ]);
+
+                $newAppointements = new AppointementController();
+
+                $newAppointements->store($user->id);
             }else{
                 return back()->withInput()->withErrors(['speciality' => 'Please choose your speciality.']);
             }
