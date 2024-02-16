@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Appointement;
+use App\Models\Doctor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\DB;
 
 class AppointementController extends Controller
 {
@@ -14,6 +16,19 @@ class AppointementController extends Controller
     public function index()
     {
         //
+    }
+
+    public function emergency()
+    {
+        $appointements = DB::table('appointements')
+            ->join('doctors', 'doctors.id', '=', 'appointements.doctorID')
+            ->join('specialities', 'specialities.id', '=', 'doctors.specialityID')
+            ->join('users', 'users.id', '=', 'doctors.userID')
+            ->select('appointements.*', 'specialities.name', 'users.name')
+            ->where('specialities.name', 'General')
+            ->where('appointements.status', 0)
+            ->get();
+        return view('patient.emergency', compact('appointements'));
     }
 
     /**
@@ -30,14 +45,14 @@ class AppointementController extends Controller
     public function store(int $doctorID)
     {
         $bookingHours = [
-            '8:00',
-            '9:00',
-            '10:00',
-            '11:00',
-            '2:00',
-            '3:00',
-            '4:00',
-            '5:00',
+            '8:00 AM',
+            '9:00 AM',
+            '10:00 AM',
+            '11:00 AM',
+            '2:00 PM',
+            '3:00 PM',
+            '4:00 PM',
+            '5:00 PM',
         ];
 
         $appointement = new Appointement();

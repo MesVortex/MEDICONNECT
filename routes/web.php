@@ -6,10 +6,14 @@ use App\Http\Controllers\SpecialityController;
 use App\Http\Controllers\MedicinController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\DoctorController;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\FavoriteController;
+
 use App\Models\Appointement;
 use App\Models\Doctor;
 use App\Models\Medicin;
 use App\Models\Patient;
+use App\Models\Review;
 use App\Models\Speciality;
 use Illuminate\Support\Facades\Route;
 
@@ -90,7 +94,16 @@ Route::put('/patient/doctorPage/update', [AppointementController::class, 'update
 
 Route::get('/patient/doctorPage/{doctor}', [DoctorController::class, 'show'])->name('doctor.show');
 
+Route::get('/patient/appointementBooking/{doctor}', [DoctorController::class, 'showAppointements'])->name('doctor.showAppointements');
+
 Route::get('/patient/explore/{speciality}', [PatientController::class, 'explore'])->name('patient.explore');
+
+Route::post('/patient/doctorPage/store', [ReviewController::class, 'store'])->name('review.store');
+
+Route::get('/patient/emergency', [AppointementController::class, 'emergency'])->name('patient.emergency');
+
+Route::post('/patient/doctorPage/add/{doctorId}', [FavoriteController::class, 'add'])->name('favorites.add');
+Route::delete('/patient/doctorPage/remove/{doctorId}', [FavoriteController::class, 'remove'])->name('favorites.remove'); 
 
 
 require __DIR__.'/auth.php';

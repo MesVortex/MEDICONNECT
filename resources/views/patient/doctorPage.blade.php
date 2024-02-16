@@ -13,6 +13,28 @@
 </head>
 
 <body class="bg-white">
+  <style>
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      padding: 0;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+
+      .star {
+        fill: none;
+        /* Empty star */
+      }
+
+      .star.checked {
+        fill: gold;
+        /* Filled star */
+      }
+    }
+  </style>
   <div class="container flex flex-col mx-auto bg-white">
     <div class="relative flex flex-wrap items-center justify-between w-full bg-white group py-7 shrink-0">
       <div class=" flex">
@@ -67,66 +89,202 @@
         @endif
       </div>
     </div>
+    <div class="h-full flex flex-col bg-gray-100 dark:bg-gray-700 shadow-xl">
+      <div class="bg-green-300 shadow-lg pb-3 rounded-b-3xl">
+        <div class="flex  rounded-b-3xl bg-gray-100 dark:bg-gray-700 space-y-5 flex-col items-center py-7">
+          <img class="h-28 w-28 rounded-full" src="https://api.lorem.space/image/face?w=120&h=120&hash=bart89fe" alt="User">
+          <a href="#"> <span class="text-h1">Michele</span></a>
+        </div>
+        <div class="grid px-7 py-2  items-center justify-around grid-cols-3 gap-4 divide-x divide-solid ">
+          <div class="col-span-1 flex flex-col items-center ">
+            <span class="text-2xl font-bold dark:text-gray-500">4</span>
+            <span class="text-lg font-medium 0">Ranking</span>
+          </div>
+          <div class="col-span-1 px-3 flex flex-col items-center ">
+            <span class="text-2xl font-bold dark:text-gray-500">
+              Doctor Rating
+            </span>
+            @if($averageReviewCount == null)
+            <div class="text-lg font-medium flex justify-center items-center">
+              <p class=" font-bold">0</p>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 ms-3 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+              </svg>
+            </div>
+            @else
+            <div class="text-lg font-medium flex justify-center items-center">
+              <p class=" font-bold">{{ number_format($averageReviewCount,1) }}</p>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 ms-3 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+              </svg>
+            </div>
+            @endif
+          </div>
+          @if(Auth::check() && Auth::user()->patient)
+                @php
+                    $isFavori = $doctor->isFavori(Auth::user()->patient->id);
+                @endphp
+                @if ($isFavori)
+                <form action="{{ route('favorites.remove', $doctor->id) }}" method="post">
+                    @csrf
+                    @method('DELETE')     
+                    <input type="hidden" value="{{ $doctor->id }}" name="doctorID">
+        
+                    <button type="submit"> <i class="fas fa-heart text-red-600 text-2xl"></i></button>
+                </form>
+                    @else               
+                        <form action="{{ route('favorites.add', $doctor->id)}}" method="post">
+                        @csrf
+                        @method('POST')
+                      
+                        <input type="hidden" value="{{ $doctor->id }}" name="doctorID">
 
-    <form action="{{ route('appointement.update') }}" method="post" class="flex-1 bg-white rounded-lg shadow-xl mt-4 p-8 mb-10">
-      @csrf
-      @method('put')
-      <h4 class="text-xl text-gray-900 font-bold">Appointements log</h4>
-      <div class="relative px-4">
-        <div class="absolute h-full border border-dashed border-opacity-20 border-secondary"></div>
-        <!-- start::Timeline item -->
-        @foreach($appointements as $appointement)
-        @if($appointement->status == 0)
-        <div class="flex items-center w-full my-6 -ml-1.5">
-          <div class="w-1/12 z-10">
-            <div class="w-3.5 h-3.5 bg-blue-600 rounded-full"></div>
-          </div>
-          <div class="w-11/12">
-            <input type="radio" id="appointement{{ $appointement->id }}" name="appointementID" value="{{ $appointement->id }}" class="hidden peer" required>
-            <label for="appointement{{ $appointement->id }}" class="inline-flex py-2 px-8 rounded-full items-center justify-between w-full text-gray-500 bg-white border border-gray-200 cursor-pointer peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
-              <div class="block">
-                <div class="w-full text-lg font-semibold">{{ $appointement->bookingHour }}</div>
-                <div class="w-full">{{ $appointement->date }}</div>
-              </div>
-              <div>
-                <i class="fa-solid fa-heart-circle-check text-green-600"></i>
-              </div>
-            </label>
-          </div>
-          <input type="hidden" name="patientID" value="{{ Auth::user()->id }}">
+                         <button type="submit"><i class="far fa-heart text-2xl"></i></button>
+                        </form>
+                        @endif
+                        @endif
         </div>
-        <!-- end::Timeline item -->
-        @else
-        <!-- start::Timeline item -->
-        <div class="flex items-center w-full my-6 -ml-1.5">
-          <div class="w-1/12 z-10">
-            <div class="w-3.5 h-3.5 bg-blue-600 rounded-full"></div>
-          </div>
-          <div class="w-11/12">
-            <input type="radio" id="appointement{{ $appointement->id }}" name="appointementID" value="{{ $appointement->id }}" class="hidden peer" disabled>
-            <label for="appointement{{ $appointement->id }}" class="inline-flex py-2 px-8 rounded-full items-center justify-between w-full text-gray-500 bg-white border border-gray-200 cursor-pointer peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
-              <div class="block">
-                <div class="w-full text-lg font-semibold">{{ $appointement->bookingHour }}</div>
-                <div class="w-full">{{ $appointement->date }}</div>
-              </div>
-              <div>
-                <div class="w-full text-red-600">Already Reserved</div>
-              </div>
-              <div>
-                <i class="fa-solid fa-heart-circle-xmark text-red-600"></i>
-              </div>
-            </label>
-          </div>
-          <input type="hidden" name="patientID" value="{{ Auth::user()->id }}">
-        </div>
-        @endif
-        @endforeach
-        <!-- end::Timeline item -->
       </div>
-      <button type="submit" class="p-2 border border-slate-200 rounded-md inline-flex space-x-1 items-center text-indigo-200 hover:text-white bg-indigo-600 hover:bg-indigo-500">
-        <i class="fa-regular fa-bookmark"></i>
-        <span class="text-sm font-medium hidden md:block">Book</span>
-      </button>
-    </form>
+
+      <div class="flex mx-auto mt-6 w-100 ">
+        <a href="{{ route('doctor.showAppointements', ['doctor'=>$doctor]) }}" class="p-2 mb-6 shadow-lg rounded-2xl tr-300 w-100 font-medium  bg-green-500 hover:bg-green-600 text-gray-50">
+          Book An Appointement
+        </a>
+      </div>
+    </div>
+
+    <div class="flex-1 bg-white rounded-lg shadow-xl mt-4 p-8 mb-10">
+      <div class="">
+        <div class="bg-white w-full rounded-2xl px-10 py-8 shadow-lg hover:shadow-2xl transition duration-500">
+          <div class=" flex justify-between items-center">
+            <div class="w-14 h-14 bg-yellow-500 rounded-full flex items-center justify-center font-bold text-white"><i class="fa-regular fa-comments"></i></div>
+            <button data-modal-target="authentication-modal" data-modal-toggle="authentication-modal" class="w-14 h-14 bg-yellow-500 rounded-full flex items-center justify-center font-bold text-white"><i class="fa-solid fa-plus"></i></button>
+            <!-- Main modal -->
+            <div id="authentication-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+              <div class="relative p-4 w-full max-w-md max-h-full">
+                <!-- Modal content -->
+                <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                  <!-- Modal header -->
+                  <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                      Sign in to our platform
+                    </h3>
+                    <button type="button" class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="authentication-modal">
+                      <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                      </svg>
+                      <span class="sr-only">Close modal</span>
+                    </button>
+                  </div>
+                  <!-- Modal body -->
+                  <div class="p-4 md:p-5">
+                    <form class="space-y-4" action="{{ route('review.store') }}" method="post">
+                      @csrf
+                      @method('post')
+                      <div>
+                        <label for="comment" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">What's your thought?</label>
+                        <textarea type="text" name="comment" id="comment" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" rows="4" required>Write your review here</textarea>
+                      </div>
+                      <input type="hidden" name="doctorID" value="{{ $doctor->id }}">
+                      <input type="hidden" name="patientID" value="{{ Auth::user()->id }}">
+                      <div>
+                        <select id="review" name="starCount">
+                          <option value="5">5 Stars - Excellent</option>
+                          <option value="4">4 Stars - Very Good</option>
+                          <option value="3">3 Stars - Good</option>
+                          <option value="2">2 Stars - Fair</option>
+                          <option value="1">1 Star - Poor</option>
+                        </select>
+                      </div>
+                      <div class="flex items-center">
+                        <input type="checkbox" id="star5" class="star-checkbox visually-hidden" value="5" />
+                        <label for="star5">
+                          <svg class="w-4 h-4 text-yellow-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
+                            <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z" />
+                          </svg>
+                        </label>
+                        <input type="checkbox" id="star4" class="star-checkbox visually-hidden" value="4" />
+                        <label for="star4">
+                          <svg class="w-4 h-4 text-yellow-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
+                            <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z" />
+                          </svg>
+                        </label>
+                        <input type="checkbox" id="star3" class="star-checkbox visually-hidden" value="3" />
+                        <label for="star3">
+                          <svg class="w-4 h-4 text-yellow-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
+                            <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z" />
+                          </svg>
+                        </label>
+                        <input type="checkbox" id="star2" class="star-checkbox visually-hidden" value="2" />
+                        <label for="star2">
+                          <svg class="w-4 h-4 text-yellow-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
+                            <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z" />
+                          </svg>
+                        </label>
+                        <input type="checkbox" id="star1" class="star-checkbox visually-hidden" value="1" />
+                        <label for="star1">
+                          <svg class="w-4 h-4 text-yellow-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
+                            <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z" />
+                          </svg>
+                        </label>
+                      </div>
+                      <button type="submit" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Login to your account</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mt-4">
+            <h1 class="text-lg text-gray-700 font-semibold">Doctor Reviews</h1>
+            @foreach($reviews as $review)
+            <hr class=" mt-4">
+            </hr>
+            <div class="flex justify-between items-center">
+              <div class=" flex items-center space-x-4 py-6">
+                <div class="">
+                  <img class="w-12 h-12 rounded-full" src="https://images.unsplash.com/photo-1593104547489-5cfb3839a3b5?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1036&q=80" alt="" />
+                </div>
+                <div class="text-sm font-semibold">{{ $review->patient->user->name }}
+                  <div class="flex mt-2">
+                    @for($i = 1; $i < $review->starCount ; $i++)
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                      @endfor
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p class=" text-md text-gray-600">{{ $review->comment }}</p>
+            @endforeach
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
+    <script>
+      // Get all star checkboxes
+      const starCheckboxes = document.querySelectorAll('.star-checkbox');
+
+      // Add event listener to each checkbox
+      starCheckboxes.forEach(function(starCheckbox) {
+        starCheckbox.addEventListener('change', function() {
+          const checkedValue = parseInt(starCheckbox.value);
+
+          // Update the style of each star based on the selection
+          starCheckboxes.forEach(function(checkbox, index) {
+            const star = checkbox.nextElementSibling.querySelector('.star');
+            if (index < checkedValue) {
+              star.classList.add('checked'); // Fill the star
+            } else {
+              star.classList.remove('checked'); // Empty the star
+            }
+          });
+        });
+      });
+    </script>
+
 </body>
 <html>

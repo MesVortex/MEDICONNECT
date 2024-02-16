@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Doctor;
 use App\Models\Appointement;
+use App\Models\Review;
 use Illuminate\Http\Request;
 
 class DoctorController extends Controller
@@ -37,8 +38,15 @@ class DoctorController extends Controller
      */
     public function show(Doctor $doctor)
     {
+        $reviews = Doctor::find($doctor->id)->review;
+        $averageReviewCount = Review::where('doctorID', $doctor->id)->avg('starCount');
+        return view('patient.doctorPage', compact('doctor', 'reviews', 'averageReviewCount'));
+    }
+
+    public function showAppointements(Doctor $doctor)
+    {
         $appointements = Doctor::find($doctor->id)->appointement;
-        return view('patient.doctorPage', compact('doctor', 'appointements'));
+        return view('patient.appointementBooking', compact('doctor', 'appointements'));
     }
 
     /**

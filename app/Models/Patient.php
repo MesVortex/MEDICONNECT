@@ -20,4 +20,8 @@ class Patient extends Model
     public function appointement(){
         return $this->hasOne(Appointement::class, 'patientID');
     }
+
+    public function review(){
+        return $this->hasOne(Review::class, 'patientID');
+    }
 }

@@ -26,5 +26,13 @@ class Doctor extends Model
         return $this->hasMany(Appointement::class, 'doctorID');
     }
 
+    public function review(){
+        return $this->hasMany(Review::class, 'doctorID');
+    }
+    public function isFavori($userId)
+    {
+        return $this->favoris()->where('patientID', $userId)->exists();
+    }
+
 
 }

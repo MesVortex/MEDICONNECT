@@ -67,37 +67,60 @@
         @endif
       </div>
     </div>
+    <form action="{{ route('appointement.update') }}" method="post" class="flex-1 bg-white rounded-lg shadow-xl mt-4 p-8 mb-10">
+      @csrf
+      @method('put')
+      <h4 class="text-xl text-gray-900 font-bold">Appointements log</h4>
+      <div class="relative px-4">
+        <div class="absolute h-full border border-dashed border-opacity-20 border-secondary"></div>
+        <!-- start::Timeline item -->
+        @php
+        $closest_appointement = null;
+        $closest_time_difference = 0;
+        $time_difference = 0;
 
-    <section>
-      <a href="{{ route('patient.emergency') }}" class="flex select-none items-center gap-3 rounded-lg bg-red-600 py-3 px-6 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-pink-500/20 transition-all hover:shadow-lg hover:shadow-pink-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none" type="button" data-ripple-light="true">
-        <i class="fa-regular fa-hospital fa-xl"></i>
-        Emergency Appointment
-      </a>
-    </section>
+        $current_time = now();
+        dd($current_time); // Get the current time in Unix timestamp
 
-    <section class=" bg-blue-500ray-50">
-      <div class="py-10  sm:py-16 block lg:py-24 relative bg-opacity-50  z-40">
-        <div class="mx-auto h-full px-4 pb-20   md:pb-10 sm:max-w-xl md:max-w-full md:px-24 lg:max-w-screen-xl lg:px-8">
-          <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8 relative">
-            <div class="max-w-xl mx-auto text-center">
-              <div class="inline-flex px-4 py-1.5 mx-auto rounded-full  ">
-                <p class="text-4xl font-semibold tracking-widest text-g uppercase">Specialities:</p>
-              </div>
-              <p class="mt-4 text-base leading-relaxed text-gray-600 group-hover:text-white">Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit..</p>
+        foreach($appointements as $appointement) {
+        $appointement_time = strtotime($appointement->bookingHour);
+
+        $time_difference = abs($appointement_time - $current_time);
+
+        if ($time_difference < $closest_time_difference || $closest_appointement===null){
+           $closest_time_difference=$time_difference; 
+           $closest_appointement=$appointement; 
+          }
+        if($closest_time_difference > 60 && $closest_appointement->status == 0) {
+        @endphp
+          <div class="flex items-center w-full my-6 -ml-1.5">
+            <div class="w-1/12 z-10">
+              <div class="w-3.5 h-3.5 bg-blue-600 rounded-full"></div>
             </div>
-            <div class="grid grid-cols-1 gap-2 mt-12 sm:grid-cols-3 lg:mt-20   ">
-              @foreach($specialities as $speciality)
-              <a href="{{route('patient.explore', ['speciality' => $speciality])}}" class="transition-all rounded-xl border-2 border-green-600 bg-red-600 hover:bg-green-600 hover:border-red-600  hover:shadow-xl m-2 p-4 relative z-40 group  ">
-                <div class="py-2 px-9 relative flex justify-center items-center">
-                  <i class=" me-5 fa-solid fa-kit-medical fa-2xl group-hover:text-white"></i>
-                  <h3 class="text-lg font-bold text-black group-hover:text-white">{{$speciality->name}}</h3>
+            <div class="w-11/12">
+              <input type="radio" id="appointement{{ $appointement->id }}" name="appointementID" value="{{ $appointement->id }}" class="hidden peer" required>
+              <label for="appointement{{ $appointement->id }}" class="inline-flex py-2 px-8 rounded-full items-center justify-between w-full text-gray-500 bg-white border border-gray-200 cursor-pointer peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
+                <div class="block">
+                  <div class="w-full text-lg font-semibold">{{ $closest_appointement->bookingHour }}</div>
+                  <div class="w-full">{{ $closest_appointement->date }}</div>
                 </div>
-              </a>
-              @endforeach
+                <div>
+                  <i class="fa-solid fa-heart-circle-check text-green-600"></i>
+                </div>
+              </label>
             </div>
+            <input type="hidden" name="patientID" value="{{ Auth::user()->id }}">
           </div>
-        </div>
-    </section>
-  </div>
+          <!-- end::Timeline item -->
+          @php
+          }
+          }
+          @endphp
+      </div>
+      <button type="submit" class="p-2 border border-slate-200 rounded-md inline-flex space-x-1 items-center text-indigo-200 hover:text-white bg-indigo-600 hover:bg-indigo-500">
+        <i class="fa-regular fa-bookmark"></i>
+        <span class="text-sm font-medium hidden md:block">Book</span>
+      </button>
+    </form>
 </body>
 <html>
